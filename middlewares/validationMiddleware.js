@@ -1,0 +1,70 @@
+const { check, body } = require("express-validator")
+const User = require("./../models/userModel")
+const bcrypt = require("bcryptjs")
+
+// validation rules for signup new user
+exports.signupRules = [
+    check("name")
+        .notEmpty().withMessage("please enter your name")
+        .isString().withMessage("name must be string")
+        .isLength({ min: 2, max: 32 }).withMessage("name must be between 2 and 32 character"),
+
+    check("email")
+        .notEmpty().withMessage("please enter your email")
+        .isEmail().withMessage("enter a valid email address")
+        .custom(async (val) => { // check if email is unique
+
+            const existingUser = await User.findOne({ email: val })
+            if (existingUser) {
+                throw new Error("email is already in use")
+            }
+
+            return true;
+        }),
+
+    check("password")
+        .notEmpty().withMessage("please enter your password")
+        .isLength({ min: 8 }).withMessage("password must be more than 8 character")
+        .isStrongPassword().withMessage("enter strong password"),
+
+    check("passwordConfirm")
+        .notEmpty().withMessage("please enter your confirm password")
+        .custom((val, { req }) => {
+            if (val !== req.body.password) throw new Error("password doesn't match")
+
+            return true;
+        })
+]
+
+
+// validation rules for user login
+exports.loginRules = [
+    check("email")
+        .notEmpty().withMessage("please enter your email")
+        .isEmail().withMessage("enter a valid email address")
+        .custom(async (val, { req }) => {  // check if email exist in database
+            const existingUser = await User.findOne({ email: val })
+
+            if (! existingUser) {
+                throw new Error("Incorrect email or password")
+            }
+
+            req.user = existingUser;
+            return true;
+        }),
+
+    check("password")
+        .notEmpty().withMessage("please enter your password")
+        .custom(async (val, { req }) => { // check if the password is correct
+
+            if (req.user) {
+                const passwordMatch = await bcrypt.compare(val, req.user.password)
+
+                if (! passwordMatch) {
+                    throw new Error("Incorrect email or password")
+                }
+
+                return true;
+            }
+        })
+]
