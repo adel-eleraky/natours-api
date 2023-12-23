@@ -3,6 +3,8 @@ const AppError = require("../utils/appError");
 const asyncHandler = require("../utils/asyncHandler");
 const jwt = require("jsonwebtoken")
 
+
+// middleware to prevent unauthorized access to the Route 
 exports.protectRoute = asyncHandler(async (req , res , next) => {
 
     let token;
@@ -32,3 +34,17 @@ exports.protectRoute = asyncHandler(async (req , res , next) => {
     req.user = user
     next()
 })
+
+
+// middleware to restrict access permission to the Route
+exports.restrictTo = (...roles) => {
+
+    return (req , res , next) => {
+        if(! roles.includes(req.user.role)) {
+            return next(new AppError("You don't have permission to do this action" , 403 , "fail"))
+        }
+
+        // GRANT ACCESS TO protected Route
+        next()
+    }
+}

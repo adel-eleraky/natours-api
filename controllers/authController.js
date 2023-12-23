@@ -20,13 +20,14 @@ exports.signup = asyncHandler(async (req, res, next) => {
     }
 
     // signup new user
-    const { name, email, password, passwordConfirm , passwordChangedAt} = req.body
+    const { name, email, password, passwordConfirm , role , passwordChangedAt} = req.body
 
     const newUser = await User.create({
         name,
         email,
         password,
         passwordConfirm,
+        role,
         passwordChangedAt
     })
 

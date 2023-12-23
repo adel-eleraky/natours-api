@@ -1,6 +1,6 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
-const { protectRoute } = require("./../middlewares/authMiddleware")
+const { protectRoute , restrictTo } = require("./../middlewares/authMiddleware")
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ router
     .route('/:id')
     .get(tourController.getTour)
     .patch(tourController.updateTour)
-    .delete(tourController.deleteTour);
+    .delete( protectRoute , restrictTo("admin" , "lead-guide") , tourController.deleteTour);
 
 
 module.exports = router;
