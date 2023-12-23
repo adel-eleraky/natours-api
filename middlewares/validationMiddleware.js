@@ -1,4 +1,4 @@
-const { check, body } = require("express-validator")
+const { check } = require("express-validator")
 const User = require("./../models/userModel")
 const bcrypt = require("bcryptjs")
 
@@ -45,7 +45,7 @@ exports.loginRules = [
         .custom(async (val, { req }) => {  // check if email exist in database
             const existingUser = await User.findOne({ email: val })
 
-            if (! existingUser) {
+            if (!existingUser) {
                 throw new Error("Incorrect email or password")
             }
 
@@ -60,11 +60,24 @@ exports.loginRules = [
             if (req.user) {
                 const passwordMatch = await bcrypt.compare(val, req.user.password)
 
-                if (! passwordMatch) {
+                if (!passwordMatch) {
                     throw new Error("Incorrect email or password")
                 }
 
                 return true;
             }
+        })
+]
+
+exports.forgetPasswordRules = [
+    check("email")
+        .notEmpty().withMessage("enter your email")
+        .isEmail().withMessage("enter valid email")
+        .custom(async (val, { req }) => {
+            const user = await User.findOne({ email: val })
+
+            if(! user) throw new Error("Email not found")
+
+            return true;
         })
 ]
