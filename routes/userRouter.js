@@ -5,9 +5,25 @@ const validation = require("./../middlewares/validationMiddleware")
 
 const router = express.Router();
 
-router.post("/signup", validation.signupRules , authController.signup)
+router.post(
+    "/signup",
+    validation.signupRules,
+    authController.signup
+)
 
-router.post("/login" , validation.loginRules , authController.login)
+router.post(
+    "/login",
+    validation.loginRules,
+    authController.login
+)
+
+router.post(
+    "/forget-password",
+    validation.forgetPasswordRules,
+    authController.forgetPassword
+)
+
+router.post("/reset-password", authController.resetPassword)
 
 
 
