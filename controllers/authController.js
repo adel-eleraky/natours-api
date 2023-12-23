@@ -8,7 +8,7 @@ const AppError = require("./../utils/appError")
 // signup user handler
 exports.signup = asyncHandler(async (req, res, next) => {
 
-    // check if there is validation errors coming from express-validator
+    // 1) check if there is validation errors coming from express-validator
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -19,7 +19,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
         })
     }
 
-    // signup new user
+    // 2) signup new user
     const { name, email, password, passwordConfirm , role , passwordChangedAt} = req.body
 
     const newUser = await User.create({
@@ -31,7 +31,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
         passwordChangedAt
     })
 
-    // generate token
+    // 3) generate token
     const token = signToken({ id: newUser._id })
 
     res.status(201).json({
@@ -47,7 +47,7 @@ exports.signup = asyncHandler(async (req, res, next) => {
 // login user handler
 exports.login = asyncHandler(async (req, res, next) => {
 
-    // check if there is validation errors coming from express-validator
+    // 1) check if there is validation errors coming from express-validator
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
@@ -58,19 +58,51 @@ exports.login = asyncHandler(async (req, res, next) => {
         })
     }
 
-    // find user by email
+    // 2) find user by email
     const { email, password } = req.body
     const user = await User.findOne({ email })
+    if(! user) return next(new AppError("Incorrect email or password" , 404 , "fail"))
 
-    // check password is correct
+    // 3) check password is correct
     const result = await user.checkPassword(password , user.password)
     if(! result) return next(new AppError("Incorrect email or password" , 400 , "fail"))
 
-    // generate token
+    // 4) generate token
     const token = signToken({ id: user._id })
 
     res.status(200).json({
         status: "success",
         token,
     })
+})
+
+
+// forget password handler
+exports.forgetPassword = asyncHandler( async (req , res , next) => {
+
+    // 1) check if there is errors from express-validator
+    const errors = validationResult(req)
+    if(! errors.isEmpty()) {
+        return res.status(400).json({
+            status: "fail",
+            message: "validation errors",
+            errors: errors.array({ onlyFirstError: true })
+        })
+    }
+
+    // 2) find user by email
+    const user = await User.findOne({ email: req.body.email })
+    if(! user) return next(new AppError("Enter valid email" , 404 , "fail"))
+
+    // 3) generate && save password reset token in database
+    const resetToken = user.createPwdToken()
+    await user.save({ validateBeforeSave: false })
+})
+
+// reset password handler
+exports.resetPassword = asyncHandler( async (req , res , next) => {
+
+    // 1) find user by email
+    const user = await User.findOne({ email: req.body.email })
+
 })
