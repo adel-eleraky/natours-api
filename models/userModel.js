@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcryptjs")
+const crypto = require("crypto")
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -41,6 +42,8 @@ const userSchema = new mongoose.Schema({
             message: "password doesn't match"
         }
     },
+    passwordResetToken: String,
+    passwordResetTokenExpire: Date,
     photo: {
         type: String,
         default: 'user.png'
@@ -71,6 +74,16 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
         return passwordTimestamp > JWTTimestamp
     }
     return false;
+}
+
+// generate && save password reset token in database
+userSchema.methods.createPwdToken = function() {
+    const resetToken = crypto.randomBytes(32).toString("hex")
+
+    this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex") // hash password Token 
+    this.passwordResetTokenExpire = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    return resetToken;
 }
 
 const userModel = mongoose.model('User' , userSchema)
