@@ -23,7 +23,11 @@ router.post(
     authController.forgetPassword
 )
 
-router.post("/reset-password", authController.resetPassword)
+router.patch(
+    "/reset-password/:PWD_token",
+    validation.resetPasswordRules,
+    authController.resetPassword
+)
 
 
 
