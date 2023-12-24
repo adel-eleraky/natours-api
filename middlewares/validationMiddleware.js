@@ -11,7 +11,7 @@ exports.signupRules = [
 
     check("email")
         .notEmpty().withMessage("please enter your email")
-        .isEmail().withMessage("enter a valid email address")
+        .isEmail().withMessage("Invalid Email")
         .custom(async (val) => { // check if email is unique
 
             const existingUser = await User.findOne({ email: val })
@@ -28,7 +28,7 @@ exports.signupRules = [
         .isStrongPassword().withMessage("enter strong password"),
 
     check("passwordConfirm")
-        .notEmpty().withMessage("please enter your confirm password")
+        .notEmpty().withMessage("please enter password confirm")
         .custom((val, { req }) => {
             if (val !== req.body.password) throw new Error("password doesn't match")
 
@@ -41,7 +41,7 @@ exports.signupRules = [
 exports.loginRules = [
     check("email")
         .notEmpty().withMessage("please enter your email")
-        .isEmail().withMessage("enter a valid email address")
+        .isEmail().withMessage("Invalid Email")
         .custom(async (val, { req }) => {  // check if email exist in database
             const existingUser = await User.findOne({ email: val })
 
@@ -69,15 +69,33 @@ exports.loginRules = [
         })
 ]
 
+// validation rules for forget password
 exports.forgetPasswordRules = [
     check("email")
         .notEmpty().withMessage("enter your email")
-        .isEmail().withMessage("enter valid email")
+        .isEmail().withMessage("Invalid Email")
         .custom(async (val, { req }) => {
             const user = await User.findOne({ email: val })
 
-            if(! user) throw new Error("Email not found")
+            if(! user) throw new Error("Invalid Email")
 
             return true;
         })
+]
+
+// validation rules for reset password
+exports.resetPasswordRules = [
+    check("password")
+        .notEmpty().withMessage("please enter new password")
+        .isLength({ min:8 }).withMessage("password must be more than 8 character")
+        .isStrongPassword().withMessage("please enter strong password"),
+
+    check("passwordConfirm")
+        .notEmpty().withMessage("please enter password confirm")
+        .custom( ( val , {req}) => {
+            if( val !== req.body.password ) throw new Error("password doesn't match")
+
+            return true;
+        }),
+
 ]
