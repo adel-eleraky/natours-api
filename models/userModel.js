@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
                 let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(val)
             },
-            message: "enter valid email address"
+            message: "Invalid Email"
         }
     },
     role: {
@@ -58,6 +58,14 @@ userSchema.pre('save' , async function(next) {
     this.password = await bcrypt.hash(this.password , 10)
     this.passwordConfirm = undefined;
     next();
+})
+
+// update passwordChangedAt property when update password
+userSchema.pre("save" , function(next) {
+    if(! this.isModified("password") || this.isNew) return next();
+
+    this.passwordChangedAt = Date.now()
+    next()
 })
 
 // check password is correct when login
