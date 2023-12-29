@@ -1,7 +1,8 @@
 const express = require('express');
 const userController = require('./../controllers/userController');
 const authController = require("./../controllers/authController")
-const validation = require("./../middlewares/validationMiddleware")
+const validation = require("./../middlewares/validationMiddleware");
+const { protectRoute } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
@@ -29,6 +30,12 @@ router.patch(
     authController.resetPassword
 )
 
+router.patch(
+    "/update-password",
+    protectRoute,
+    validation.updatePasswordRules,
+    authController.updatePassword
+)
 
 
 // crud operations on user
