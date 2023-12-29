@@ -2,26 +2,22 @@ const crypto = require("crypto")
 const User = require("../models/userModel");
 const { signToken } = require("../utils/jsonWebToken")
 const asyncHandler = require("../utils/asyncHandler");
-const { validationResult } = require("express-validator")
 const AppError = require("./../utils/appError")
 const sendEmail = require("./../utils/email")
+const { validationResult } = require("express-validator")
+const displayValidationErrors = require("./../utils/validationErrors")
 
 // signup user handler
 exports.signup = asyncHandler(async (req, res, next) => {
 
     // 1) check if there is validation errors coming from express-validator
-    const errors = validationResult(req);
-
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            status: "fail",
-            message: "validation errors",
-            errors: errors.array({ onlyFirstError: true })
-        })
+        return displayValidationErrors(errors, res)
     }
 
     // 2) signup new user
-    const { name, email, password, passwordConfirm , role , passwordChangedAt} = req.body
+    const { name, email, password, passwordConfirm, role } = req.body
 
     const newUser = await User.create({
         name,
@@ -29,7 +25,6 @@ exports.signup = asyncHandler(async (req, res, next) => {
         password,
         passwordConfirm,
         role,
-        passwordChangedAt
     })
 
     // 3) generate token
@@ -50,23 +45,18 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // 1) check if there is validation errors coming from express-validator
     const errors = validationResult(req)
-
     if (!errors.isEmpty()) {
-        return res.status(400).json({
-            status: "fail",
-            message: "validation errors",
-            errors: errors.array({ onlyFirstError: true })
-        })
+        return displayValidationErrors(errors, res)
     }
 
     // 2) find user by email
     const { email, password } = req.body
     const user = await User.findOne({ email })
-    if(! user) return next(new AppError("Incorrect email or password" , 404 , "fail"))
+    if (!user) return next(new AppError("Incorrect email or password", 401, "fail"))
 
     // 3) check password is correct
-    const result = await user.checkPassword(password , user.password)
-    if(! result) return next(new AppError("Incorrect email or password" , 400 , "fail"))
+    const result = await user.checkPassword(password, user.password)
+    if (!result) return next(new AppError("Incorrect email or password", 401, "fail"))
 
     // 4) generate token
     const token = signToken({ id: user._id })
@@ -79,21 +69,17 @@ exports.login = asyncHandler(async (req, res, next) => {
 
 
 // forget password handler
-exports.forgetPassword = asyncHandler( async (req , res , next) => {
+exports.forgetPassword = asyncHandler(async (req, res, next) => {
 
     // 1) check if there is errors from express-validator
     const errors = validationResult(req)
-    if(! errors.isEmpty()) {
-        return res.status(400).json({
-            status: "fail",
-            message: "validation errors",
-            errors: errors.array({ onlyFirstError: true })
-        })
+    if (!errors.isEmpty()) {
+        return displayValidationErrors(errors, res)
     }
 
     // 2) find user by email
     const user = await User.findOne({ email: req.body.email })
-    if(! user) return next(new AppError("Enter valid email" , 404 , "fail"))
+    if (!user) return next(new AppError("Enter valid email", 401, "fail"))
 
     // 3) generate && save password reset token in database
     const resetToken = user.createPwdToken()
@@ -118,19 +104,13 @@ exports.forgetPassword = asyncHandler( async (req , res , next) => {
 })
 
 // reset password handler
-exports.resetPassword = asyncHandler( async (req , res , next) => {
+exports.resetPassword = asyncHandler(async (req, res, next) => {
 
     // 1) check if there is errors from express-validator
     const errors = validationResult(req)
-    if(! errors.isEmpty()) {
-
-        res.status(400).json({
-            status: "fail",
-            message: "validation errors",
-            errors: errors.array({ onlyFirstError: true })
-        })
+    if (!errors.isEmpty()) {
+        return displayValidationErrors(errors, res)
     }
-
     // 2) find user by PWD reset token
     const hashedToken = crypto.createHash("sha256").update(req.params.PWD_token).digest("hex")
 
@@ -140,10 +120,10 @@ exports.resetPassword = asyncHandler( async (req , res , next) => {
     })
 
     // 3) check if the token has not expired , and there is user, set the new password
-    if(! user) return next(new AppError("Invalid token or has expired" , 400 , "fail"))
+    if (!user) return next(new AppError("Invalid token or has expired", 401, "fail"))
 
-    const { password , passwordConfirm } = req.body
-    
+    const { password, passwordConfirm } = req.body
+
     user.password = password
     user.passwordConfirm = passwordConfirm
     user.passwordResetToken = undefined
@@ -156,6 +136,37 @@ exports.resetPassword = asyncHandler( async (req , res , next) => {
     res.status(200).json({
         status: "success",
         message: "password reset successfully",
+        token
+    })
+})
+
+
+// update current user password
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+
+    // 1) check if there is errors from express-validator
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return displayValidationErrors(errors, res)
+    }
+    // 2) get current user
+    const user = req.user
+
+    //3) update user password
+    const { oldPassword, newPassword, newPasswordConfirm } = req.body
+    // check password is correct
+    const result = await user.checkPassword(oldPassword, user.password)
+    if (!result) return next(new AppError("Incorrect password", 401, "fail"))
+
+    user.password = newPassword;
+    user.passwordConfirm = newPasswordConfirm;
+    await user.save()
+
+    // 4) log user in, send JWT to the client
+    const token = signToken({ id: user._id })
+    res.status(200).json({
+        status: "success",
+        message: "password updated successfully",
         token
     })
 })
