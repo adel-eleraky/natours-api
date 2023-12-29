@@ -77,7 +77,7 @@ exports.forgetPasswordRules = [
         .custom(async (val, { req }) => {
             const user = await User.findOne({ email: val })
 
-            if(! user) throw new Error("Invalid Email")
+            if (!user) throw new Error("Invalid Email")
 
             return true;
         })
@@ -87,15 +87,45 @@ exports.forgetPasswordRules = [
 exports.resetPasswordRules = [
     check("password")
         .notEmpty().withMessage("please enter new password")
-        .isLength({ min:8 }).withMessage("password must be more than 8 character")
+        .isLength({ min: 8 }).withMessage("password must be more than 8 character")
         .isStrongPassword().withMessage("please enter strong password"),
 
     check("passwordConfirm")
         .notEmpty().withMessage("please enter password confirm")
-        .custom( ( val , {req}) => {
-            if( val !== req.body.password ) throw new Error("password doesn't match")
+        .custom((val, { req }) => {
+            if (val !== req.body.password) throw new Error("password doesn't match")
 
             return true;
         }),
 
+]
+
+// validation rules for update current user password
+exports.updatePasswordRules = [
+    check("oldPassword")
+        .notEmpty().withMessage("please enter old password")
+        .custom(async (val, { req }) => { // check if the password is correct
+
+            if (req.user) {
+                const passwordMatch = await bcrypt.compare(val, req.user.password)
+
+                if (!passwordMatch) throw new Error("Incorrect password")
+
+                return true
+            }
+        }),
+
+    check("newPassword")
+        .notEmpty().withMessage("please enter new password")
+        .isLength({ min: 8 }).withMessage("password must be more than 8 character")
+        .isStrongPassword().withMessage("please enter strong password"),
+
+    check("newPasswordConfirm")
+        .notEmpty().withMessage("please enter password confirm")
+        .custom((val, { req }) => {
+
+            if (val !== req.body.newPassword) throw new Error("password doesn't match")
+
+            return true;
+        })
 ]
