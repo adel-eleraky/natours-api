@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please enter your password'],
         minLength: [ 8 , "password must be more than 8 character"],
     },
-    passwordConfirm: {  // only for validation
+    passwordConfirm: {  // only for validation , only work on create() , save()
         type: String,
         required: true,
         minLength: [ 8 , "password must be more than 8 character"],
@@ -55,8 +55,8 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save' , async function(next) {
     if(! this.isModified("password")) return next(); // run this if only password isn't modified
 
-    this.password = await bcrypt.hash(this.password , 10)
-    this.passwordConfirm = undefined;
+    this.password = await bcrypt.hash(this.password , 10)  // hash password
+    this.passwordConfirm = undefined; // delete passwordConfirm field
     next();
 })
 
