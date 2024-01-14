@@ -38,24 +38,16 @@ router.patch(
     authController.updatePassword
 )
 
-// update user data
-router.patch(
-    "/update-user",
-    protectRoute,
-    validation.updateUserRules,
-    userController.updateUser
-)
-
 // crud operations on user
 router
     .route('/')
     .get(userController.getAllUsers)
-    .post(userController.createUser);
+    .patch( protectRoute , validation.updateUserRules , userController.updateUser)
+    .delete( protectRoute , userController.deleteUser)
 
 router
     .route("/:id")
     .get(userController.getUser)
-    .delete(userController.deleteUser)
 
 
 module.exports = router;
