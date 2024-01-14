@@ -34,9 +34,7 @@ exports.createUser = asyncHandler( async (req, res) => {
 
 exports.deleteUser = asyncHandler( async (req, res ,next) => {
 
-    const id = req.params.id
-
-    await User.findByIdAndDelete(id)
+    await User.findByIdAndDelete(req.user.id)
 
     res.status(204).json({
         status: "success",
