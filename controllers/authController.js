@@ -5,7 +5,8 @@ const asyncHandler = require("../utils/asyncHandler");
 const AppError = require("./../utils/appError")
 const sendEmail = require("./../utils/email")
 const { validationResult } = require("express-validator")
-const displayValidationErrors = require("./../utils/validationErrors")
+const displayValidationErrors = require("./../utils/validationErrors");
+const { sendResponse } = require("../utils/sendResponse");
 
 // signup user handler
 exports.signup = asyncHandler(async (req, res, next) => {
@@ -30,14 +31,8 @@ exports.signup = asyncHandler(async (req, res, next) => {
     // 3) generate token
     const token = signToken({ id: newUser._id })
 
-    res.status(201).json({
-        status: "success",
-        token,
-        message: "new user created successfully",
-        data: {
-            user: newUser
-        }
-    })
+    // 4) send response to the client
+    sendResponse(res , 201 , { message: "new user created successfully" , token})
 })
 
 // login user handler
@@ -61,10 +56,8 @@ exports.login = asyncHandler(async (req, res, next) => {
     // 4) generate token
     const token = signToken({ id: user._id })
 
-    res.status(200).json({
-        status: "success",
-        token,
-    })
+    // 5) send response to the client
+    sendResponse(res , 200 , { message: "logged in successfully"  , token})
 })
 
 
@@ -97,10 +90,7 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
     })
 
     // 5) send response to the client
-    res.status(200).json({
-        status: "success",
-        message: "Password Reset Token sent to your email"
-    })
+    sendResponse(res , 200 , { message: "Password Reset Token sent to your email"})
 })
 
 // reset password handler
@@ -133,11 +123,8 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     // 4) log the user in , send JWT to the client
     const token = signToken({ id: user._id })
 
-    res.status(200).json({
-        status: "success",
-        message: "password reset successfully",
-        token
-    })
+    // 5) send response to the client
+    sendResponse(res , 200 , { message: "password reset successfully" , token})
 })
 
 
@@ -164,9 +151,7 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 
     // 4) log user in, send JWT to the client
     const token = signToken({ id: user._id })
-    res.status(200).json({
-        status: "success",
-        message: "password updated successfully",
-        token
-    })
+
+    // 5) send response to the client
+    sendResponse(res , 200 , { message: "password updated successfully" , token})
 })

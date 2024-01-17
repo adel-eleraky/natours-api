@@ -1,7 +1,8 @@
 const Tour = require('./../models/tourModel');
 const ApiFeatures = require("./../utils/apiFeatures")
 const asyncHandler = require("./../utils/asyncHandler")
-const AppError = require("./../utils/appError")
+const AppError = require("./../utils/appError");
+const { sendResponse } = require('../utils/sendResponse');
 
 // middleware to select top 5 cheap tours
 exports.aliasTopTours = (req, res, next) => {
@@ -14,24 +15,20 @@ exports.aliasTopTours = (req, res, next) => {
 
 // get all tours
 exports.getAllTours = asyncHandler(async (req, res , next) => {
-	// build the query
+
+	// 1) build the query
 	const features = new ApiFeatures(Tour.find(), req.query)
 		.filter()
 		.sort()
 		.limitFields()
 		.paginate()
 
-	// run the query
+	// 2) run the query
 	const tours = await features.query;
 
-	// send response
-	res.status(200).json({
-		status: 'success',
-		result: tours.length,
-		data: {
-			tours,
-		},
-	});
+	// 3) send response to the client
+	sendResponse(res ,  200 , { result: tours.length , data: { tours } })
+
 });
 
 
@@ -45,12 +42,8 @@ exports.getTour = asyncHandler(async (req, res , next) => {
 		return next(new AppError("No Tour found with this ID" , 404 , "fail"))
 	}
 
-	res.status(200).json({
-		status: 'success',
-		data: {
-			tour,
-		},
-	});
+	// send response to the client
+	sendResponse(res ,  200 , { data: { tour } })
 });
 
 // update tour
@@ -61,13 +54,8 @@ exports.updateTour = asyncHandler(async (req, res , next) => {
 		runValidators: true,  // to run data validators again on update
 	});
 
-	res.status(201).json({
-		status: 'success',
-		message: 'tour updated successfully',
-		data: {
-			tour: UpdatedTour,
-		},
-	});
+	// send response to the client
+	sendResponse(res ,  201 , { message: "tour updated successfully" ,  data: { tour: UpdatedTour } })
 });
 
 // delete tour
@@ -79,7 +67,8 @@ exports.deleteTour = asyncHandler(async (req, res , next) => {
 		return next(new AppError("No Tour found with this ID" , 404 , "fail"))
 	}
 
-	res.status(204).json({ status: 'success', data: null });
+	// send response to the client
+	sendResponse(res ,  204 , { message: "tour deleted successfully" })
 
 });
 
@@ -88,14 +77,8 @@ exports.createTour = asyncHandler(async (req, res , next) => {
 
 	const newTour = await Tour.create(req.body);
 
-	res.status(201).json({
-		status: 'success',
-		message: 'New Tour created successfully',
-		data: {
-			tour: newTour,
-		},
-	});
-
+	// send response to the client
+	sendResponse(res ,  201 , { message: "new tour created successfully" , data: { tour: newTour } })
 });
 
 
@@ -118,13 +101,8 @@ exports.getTourStats = asyncHandler(async (req, res , next) => {
 		}
 	])
 
-	res.status(200).json({
-		status: "success",
-		data: {
-			stats
-		}
-	})
-
+	// send response to the client
+	sendResponse(res ,  200 , {  data: { stats } })
 });
 
 // get monthly plan per year
@@ -161,12 +139,6 @@ exports.getMonthlyPlan = asyncHandler(async (req, res, next) => {
 		}
 	])
 
-	res.status(200).json({
-		status: "success",
-		result: plan.length,
-		data: {
-			plan
-		}
-	})
-
+	// send response to the client
+	sendResponse(res ,  200 , { result: plan.length , data: { plan } })
 });
