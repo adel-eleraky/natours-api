@@ -20,7 +20,7 @@ exports.protectRoute = asyncHandler(async (req , res , next) => {
 
 
     // 3) check if the user belonging to this token still exist
-    const user = await User.findById(decodedJWT.id)
+    const user = await User.findById(decodedJWT.id).select("+password")
     if(! user) return next(new AppError("the User belonging to this token doesn't exist" , 401 , "fail"))
 
 
