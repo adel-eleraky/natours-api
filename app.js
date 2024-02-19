@@ -4,6 +4,7 @@ const AppError = require('./utils/appError')
 const globalErrorMiddleware = require("./middlewares/errorMiddleware")
 const tourRouter = require("./routes/tourRouter")
 const userRouter = require("./routes/userRouter")
+const reviewRouter = require("./routes/reviewRouter")
 
 const app = express()
 
@@ -13,6 +14,7 @@ setupGlobalMiddleware(app)
 // Routes
 app.use("/api/v1/tours", tourRouter)
 app.use("/api/v1/users", userRouter)
+app.use("/api/v1/reviews", reviewRouter)
 
 // unhandled Routes
 app.all("*", (req, res, next) => {
