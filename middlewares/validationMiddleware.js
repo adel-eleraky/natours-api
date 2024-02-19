@@ -43,7 +43,7 @@ exports.loginRules = [
         .notEmpty().withMessage("please enter your email")
         .isEmail().withMessage("Invalid Email")
         .custom(async (val, { req }) => {  // check if email exist in database
-            const existingUser = await User.findOne({ email: val })
+            const existingUser = await User.findOne({ email: val }).select("password")
 
             if (!existingUser) {
                 throw new Error("Incorrect email or password")
@@ -132,20 +132,26 @@ exports.updatePasswordRules = [
 
 exports.updateUserRules = [
     check('email')
+        .optional({ checkFalsy: false })
         .notEmpty().withMessage("please enter your email")
         .isEmail().withMessage("please enter valid email")
         .custom(async (val) => { // check if email is unique
-            
-            const existingUser = await User.findOne({ email: val})
 
-            if(existingUser) {
+            const existingUser = await User.findOne({ email: val })
+
+            if (existingUser) {
                 throw new Error("email already exist")
             }
-
             return true;
         }),
 
     check("name")
+        .optional({ checkFalsy: false })
         .notEmpty().withMessage("please enter your name")
-        .isLength({ min:2 , max: 32 }).withMessage("name must be between 2 and 32 character")
+        .isLength({ min: 2, max: 32 }).withMessage("name must be between 2 and 32 character"),
+
+    check("role")
+        .optional({ checkFalsy: false })
+        .notEmpty().withMessage("please enter your role")
+        .isIn(["user", "admin", "guide", "lead-guide"]).withMessage("role must be one of the following: user, admin, guide, lead-guide")
 ]
