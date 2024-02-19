@@ -1,4 +1,4 @@
-exports.sendResponse = (res , statusCode , responseData) => {
+const sendResponse = (res , statusCode , responseData) => {
 
     // save token in cookie 
     if(responseData.token) saveTokenInCookie(res , responseData.token)
@@ -22,3 +22,5 @@ const saveTokenInCookie = (res , token) => {
 
     res.cookie("jwt" , token , cookieOptions)
 }
+
+module.exports = sendResponse
