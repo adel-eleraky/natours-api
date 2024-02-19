@@ -6,7 +6,7 @@ const AppError = require("./../utils/appError")
 const sendEmail = require("./../utils/email")
 const { validationResult } = require("express-validator")
 const displayValidationErrors = require("./../utils/validationErrors");
-const { sendResponse } = require("../utils/sendResponse");
+const sendResponse = require("../utils/sendResponse");
 
 // signup user handler
 exports.signup = asyncHandler(async (req, res, next) => {
@@ -32,7 +32,10 @@ exports.signup = asyncHandler(async (req, res, next) => {
     const token = signToken({ id: newUser._id })
 
     // 4) send response to the client
-    sendResponse(res , 201 , { message: "new user created successfully" , token})
+    sendResponse(res, 201, {
+        message: "new user created successfully",
+        token
+    })
 })
 
 // login user handler
@@ -46,7 +49,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 
     // 2) find user by email
     const { email, password } = req.body
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).select("+password")
     if (!user) return next(new AppError("Incorrect email or password", 401, "fail"))
 
     // 3) check password is correct
@@ -57,7 +60,10 @@ exports.login = asyncHandler(async (req, res, next) => {
     const token = signToken({ id: user._id })
 
     // 5) send response to the client
-    sendResponse(res , 200 , { message: "logged in successfully"  , token})
+    sendResponse(res, 200, {
+        message: "logged in successfully",
+        token
+    })
 })
 
 
@@ -90,7 +96,9 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
     })
 
     // 5) send response to the client
-    sendResponse(res , 200 , { message: "Password Reset Token sent to your email"})
+    sendResponse(res, 200, {
+        message: "Password Reset Token sent to your email"
+    })
 })
 
 // reset password handler
@@ -124,7 +132,10 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     const token = signToken({ id: user._id })
 
     // 5) send response to the client
-    sendResponse(res , 200 , { message: "password reset successfully" , token})
+    sendResponse(res, 200, {
+        message: "password reset successfully",
+        token
+    })
 })
 
 
@@ -153,5 +164,8 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
     const token = signToken({ id: user._id })
 
     // 5) send response to the client
-    sendResponse(res , 200 , { message: "password updated successfully" , token})
+    sendResponse(res, 200, {
+        message: "password updated successfully",
+        token
+    })
 })
