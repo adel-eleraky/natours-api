@@ -11,13 +11,11 @@ const DB = process.env.DATABASE.replace(
     process.env.DATABASE_PASSWORD
 );
 
-mongoose.connect(DB , {
-    useNewUrlParser: true,
-}).then((conn) => {
+mongoose.connect(DB).then((conn) => {
     console.group('DB connected successfully');
 });
 
-const tours = JSON.parse( fs.readFileSync(`${__dirname}/tours-simple.json` , "utf-8" ));
+const tours = JSON.parse( fs.readFileSync(`${__dirname}/tours.json` , "utf-8" ));
 
 const importData = async() => {
     try{
