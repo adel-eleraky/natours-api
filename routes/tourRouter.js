@@ -1,11 +1,14 @@
 const express = require('express');
-const tourController = require('../controllers/tourController');
+const tourController = require('./../controllers/tourController');
 const { protectRoute , restrictTo } = require("./../middlewares/authMiddleware")
+const reviewRouter = require("./reviewRouter")
 
 const router = express.Router();
 
 // param middleware
 // router.param('id', tourController.checkId); 
+
+router.use("/:tourId/reviews" , reviewRouter)
 
 // get top five cheapest tours
 router
