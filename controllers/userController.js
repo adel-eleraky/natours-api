@@ -54,7 +54,12 @@ exports.deleteUser = factory.deleteOne(User)
 //     })
 // });
 
-
+exports.setUpdateData = (req, res, next) => {
+    
+    const { email, name, role } = req.body
+    req.updateData = { email, name, role }
+    next()
+}
 exports.updateUser = factory.updateOne(User)
 // exports.updateUser = asyncHandler(async (req, res, next) => {
 
