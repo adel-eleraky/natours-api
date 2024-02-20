@@ -3,6 +3,7 @@ const ApiFeatures = require("./../utils/apiFeatures")
 const asyncHandler = require("./../utils/asyncHandler")
 const AppError = require("./../utils/appError");
 const sendResponse = require('../utils/sendResponse');
+const factory = require("./handlerFactory");
 
 // middleware to select top 5 cheap tours
 exports.aliasTopTours = asyncHandler(async (req, res, next) => {
@@ -52,47 +53,51 @@ exports.getTour = asyncHandler(async (req, res, next) => {
 });
 
 // update tour
-exports.updateTour = asyncHandler(async (req, res, next) => {
+exports.updateTour = factory.updateOne(Tour)
+// exports.updateTour = asyncHandler(async (req, res, next) => {
 
-	const UpdatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-		new: true,   // to return the updated doc
-		runValidators: true,  // to run data validators again on update
-	});
+// 	const UpdatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+// 		new: true,   // to return the updated doc
+// 		runValidators: true,  // to run data validators again on update
+// 	});
 
-	// send response to the client
-	sendResponse(res, 201, {
-		message: "tour updated successfully",
-		data: { tour: UpdatedTour }
-	})
-});
+// 	// send response to the client
+// 	sendResponse(res, 201, {
+// 		message: "tour updated successfully",
+// 		data: { tour: UpdatedTour }
+// 	})
+// });
 
 // delete tour
-exports.deleteTour = asyncHandler(async (req, res, next) => {
+exports.deleteTour = factory.deleteOne(Tour)
+// exports.deleteTour = asyncHandler(async (req, res, next) => {
 
-	const tour = await Tour.findByIdAndDelete(req.params.id);
+// 	const tour = await Tour.findByIdAndDelete(req.params.id);
 
-	if (!tour) {
-		return next(new AppError("No Tour found with this ID", 404, "fail"))
-	}
+// 	if (!tour) {
+// 		return next(new AppError("No Tour found with this ID", 404, "fail"))
+// 	}
 
-	// send response to the client
-	sendResponse(res, 204, {
-		message: "tour deleted successfully"
-	})
+// 	// send response to the client
+// 	sendResponse(res, 204, {
+// 		message: "tour deleted successfully"
+// 	})
 
-});
+// });
+
 
 // create new tour
-exports.createTour = asyncHandler(async (req, res, next) => {
+exports.createTour = factory.createOne(Tour)
+// exports.createTour = asyncHandler(async (req, res, next) => {
 
-	const newTour = await Tour.create(req.body);
+// 	const newTour = await Tour.create(req.body);
 
-	// send response to the client
-	sendResponse(res, 201, {
-		message: "new tour created successfully",
-		data: { tour: newTour }
-	})
-});
+// 	// send response to the client
+// 	sendResponse(res, 201, {
+// 		message: "new tour created successfully",
+// 		data: { tour: newTour }
+// 	})
+// });
 
 
 // get tour stats
@@ -132,8 +137,8 @@ exports.getMonthlyPlan = asyncHandler(async (req, res, next) => {
 		{
 			$match: {
 				startDates: {
-					$gte: `${year}-01-01,00:00`, // here is a problem with date format
-					$lte: `${year}-21-31,23:59`,
+					$gte: new Date(`${year}-01-01`), // here is a problem with date format
+					$lte: new Date(`${year}-21-31`),
 				}
 			}
 		},
