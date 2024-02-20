@@ -42,12 +42,13 @@ router.patch(
 router
     .route('/')
     .get(userController.getAllUsers)
-    .patch( protectRoute , validation.updateUserRules , userController.updateUser)
-    .delete( protectRoute , userController.deleteUser)
+    // .patch( protectRoute , validation.updateUserRules , userController.updateUser)
 
 router
     .route("/:id")
     .get(userController.getUser)
+    .delete( protectRoute , userController.deleteUser)
+    .patch( protectRoute , validation.updateUserRules , userController.setUpdateData , userController.updateUser)
 
 
 module.exports = router;
