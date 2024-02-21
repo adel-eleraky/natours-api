@@ -15,42 +15,44 @@ exports.aliasTopTours = asyncHandler(async (req, res, next) => {
 
 
 // get all tours
-exports.getAllTours = asyncHandler(async (req, res, next) => {
+exports.getAllTours = factory.getAll(Tour)
+// exports.getAllTours = asyncHandler(async (req, res, next) => {
 
-	// 1) build the query
-	const features = new ApiFeatures(Tour.find(), req.query)
-		.filter()
-		.sort()
-		.limitFields()
-		.paginate()
+// 	// 1) build the query
+// 	const features = new ApiFeatures(Tour.find(), req.query)
+// 		.filter()
+// 		.sort()
+// 		.limitFields()
+// 		.paginate()
 
-	// 2) run the query
-	const tours = await features.query;
+// 	// 2) run the query
+// 	const tours = await features.query;
 
-	// 3) send response to the client
-	sendResponse(res, 200, {
-		result: tours.length,
-		data: { tours }
-	})
+// 	// 3) send response to the client
+// 	sendResponse(res, 200, {
+// 		result: tours.length,
+// 		data: { tours }
+// 	})
 
-});
+// });
 
 
 // get single tour
-exports.getTour = asyncHandler(async (req, res, next) => {
+exports.getTour = factory.getOne(Tour , { path: "reviews" })
+// exports.getTour = asyncHandler(async (req, res, next) => {
 
-	const tour = await Tour.findById(req.params.id).populate("reviews")
-	// Tour.findOne({ _id: req.params.id })
+// 	const tour = await Tour.findById(req.params.id).populate("reviews")
+// 	// Tour.findOne({ _id: req.params.id })
 
-	if (!tour) {
-		return next(new AppError("No Tour found with this ID", 404, "fail"))
-	}
+// 	if (!tour) {
+// 		return next(new AppError("No Tour found with this ID", 404, "fail"))
+// 	}
 
-	// send response to the client
-	sendResponse(res, 200, {
-		data: { tour }
-	})
-});
+// 	// send response to the client
+// 	sendResponse(res, 200, {
+// 		data: { tour }
+// 	})
+// });
 
 // update tour
 exports.updateTour = factory.updateOne(Tour)
