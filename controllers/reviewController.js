@@ -4,18 +4,19 @@ const asyncHandler = require("./../utils/asyncHandler")
 const factory = require("./handlerFactory");
 
 // get all reviews handler
-exports.getAllReviews = asyncHandler(async (req, res, next) => {
+exports.getAllReviews = factory.getAll(Review)
+// exports.getAllReviews = asyncHandler(async (req, res, next) => {
 
-    let filter = {}
-    if (req.params.tourId) filter = { tour: req.params.tourId }
+    // let filter = {}
+    // if (req.params.tourId) filter = { tour: req.params.tourId }
 
-    const Reviews = await Review.find(filter);
+//     const Reviews = await Review.find(filter);
 
-    sendResponse(res, 200, {
-        result: Reviews.length,
-        data: { Reviews }
-    })
-})
+//     sendResponse(res, 200, {
+//         result: Reviews.length,
+//         data: { Reviews }
+//     })
+// })
 
 // create review handler
 // exports.createReview = asyncHandler(async (req, res, next) => {
@@ -43,6 +44,7 @@ exports.setTourUserIds = (req, res, next) => {
     next()
 }
 
+exports.getReview = factory.getOne(Review)
 exports.createReview = factory.createOne(Review)
 exports.deleteReview = factory.deleteOne(Review)
 exports.updateReview = factory.updateOne(Review)
