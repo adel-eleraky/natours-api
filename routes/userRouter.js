@@ -30,6 +30,7 @@ router.patch(
     validation.resetPasswordRules,
     authController.resetPassword
 )
+
 // update user password
 router.patch(
     "/update-password",
@@ -38,17 +39,19 @@ router.patch(
     authController.updatePassword
 )
 
+// get current logged-in user data
+router.get("/me", protectRoute, userController.setUserId, userController.getUser)
 // crud operations on user
 router
     .route('/')
     .get(userController.getAllUsers)
-    // .patch( protectRoute , validation.updateUserRules , userController.updateUser)
+// .patch( protectRoute , validation.updateUserRules , userController.updateUser)
 
 router
     .route("/:id")
     .get(userController.getUser)
-    .delete( protectRoute , userController.deleteUser)
-    .patch( protectRoute , validation.updateUserRules , userController.setUpdateData , userController.updateUser)
+    .delete(protectRoute, userController.deleteUser)
+    .patch(protectRoute, validation.updateUserRules, userController.setUpdateData, userController.updateUser)
 
 
 module.exports = router;
