@@ -62,6 +62,9 @@ exports.login = asyncHandler(async (req, res, next) => {
     // 5) send response to the client
     sendResponse(res, 200, {
         message: "logged in successfully",
+        data: {
+            user
+        },
         token
     })
 })
