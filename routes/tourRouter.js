@@ -25,6 +25,12 @@ router
     .route("/tours-stats")
     .get(tourController.getTourStats)
 
+// geo-spatial queries: tours within certain distance of certain coordinates
+router.route("/tours-within/:distance/center/:lat_lng/unit/:unit").get(tourController.getToursWithin)
+
+// get distance of tours between two coordinates
+router.route("/tours-distance/:lat_lng/unit/:unit").get(tourController.getToursDistance)
+
 // CRUD operations on tours
 router
     .route('/')
