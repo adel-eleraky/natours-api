@@ -32,9 +32,13 @@ const Tour = require("./tourModel")
         }
     )
 
+// so that each user can review single tour one time only
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true })
+
+// query middleware
 reviewSchema.pre(/^find/, function (next) {
 
-    this.populate({
+    this.populate({  // this refer to the query
         path: "user",
         select: "name photo"
     })
@@ -57,14 +61,31 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
         }
     ])
 
-    await Tour.findByIdAndUpdate(tourId, {
-        ratingsQuantity: stats[0].nRatings,
-        ratingsAverage: stats[0].avgRating
-    })
+    if(stats.length > 0) {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: stats[0].nRatings,
+            ratingsAverage: stats[0].avgRating
+        })
+    } else {
+        await Tour.findByIdAndUpdate(tourId, {
+            ratingsQuantity: 0,
+            ratingsAverage: 4.5
+        })
+    }
+
 }
 
+// document middleware
 reviewSchema.post("save", function () {
     this.constructor.calcAverageRatings(this.tour)  // this keyword refer to the document
+})
+
+
+// findByIdAndUpdate short-hand for findOneAndUpdate
+// findByIdAndDelete short-hand for findOneAndDelete
+reviewSchema.post(/^findOneAnd/, async function (doc) {
+    //await this.findOne() , doesn't work here in post middleware , the query has already executed
+    this.model.calcAverageRatings(doc.tour)
 })
 
 const ReviewModel = mongoose.model("Review", reviewSchema)
