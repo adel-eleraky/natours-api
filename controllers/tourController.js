@@ -101,6 +101,70 @@ exports.createTour = factory.createOne(Tour)
 // 	})
 // });
 
+// get tours within radius
+exports.getToursWithin = asyncHandler(async (req, res, next) => {
+	const { distance, lat_lng, unit } = req.params
+	const [lat, lng] = lat_lng.split(",")
+
+	const radius = unit === "mi" ? distance / 3963.2 : distance / 6378.1
+
+	if(!lat || !lng) {
+		next(new AppError("Please provide latitude and longitude in the format lat,lng", 400 , "fail"))
+	}
+
+	const tours = await Tour.find({
+		startLocation: {
+			$geoWithin: {
+				$centerSphere: [ [ lng, lat ], radius ] 
+			}
+		}
+	})
+
+	sendResponse(res, 200, {
+		status: "success",
+		result: tours.length,
+		data: {
+			docs: tours
+		}
+	})
+})
+
+// get distance of tours between two coordinates
+exports.getToursDistance = asyncHandler(async (req, res, next) => {
+
+	const { lat_lng, unit } = req.params
+	const [lat, lng] = lat_lng.split(",")
+
+	if(!lat || !lng) {
+		next(new AppError("Please provide latitude and longitude in the format lat,lng", 400 , "fail"))
+	}
+
+	const distances = await Tour.aggregate([
+		{
+			$geoNear: {
+				near: {
+					type: "Point",
+					coordinates: [lng * 1, lat * 1]
+				},
+				distanceField: "distance",
+				distanceMultiplier: unit === "mi" ? 0.000621371 : 0.001
+			}
+		},
+		{
+			$project: {
+				distance: 1,
+				name: 1
+			}
+		}
+	])
+
+	sendResponse(res, 200, {
+		status: "success",
+		data: {
+			docs: distances
+		}
+	})
+})
 
 // get tour stats
 exports.getTourStats = asyncHandler(async (req, res, next) => {
