@@ -1,3 +1,4 @@
+const path = require("path")
 const express = require("express")
 const morgan = require("morgan")
 const cookieParser = require("cookie-parser")
@@ -16,7 +17,7 @@ const setupGlobalMiddleware = (app) => {
     }
     
     app.use(express.json())  // body parser , reading data from req.body
-    app.use(express.static(`${__dirname}/public`))  // serving static files
+    app.use(express.static(path.join(__dirname, ".." , "public")))  // serving static files
     app.use(cookieParser())  // cookie parser , reading cookies from req.cookies
     
     // data sanitization against NoSql query injection , make sure to implement after any body parser
