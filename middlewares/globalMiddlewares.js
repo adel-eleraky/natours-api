@@ -11,15 +11,47 @@ const hpp = require("hpp")
 const setupGlobalMiddleware = (app) => {
 
     app.use(helmet())  // set security http headers
-    
+    // Further HELMET configuration for Security Policy (CSP)
+    const scriptSrcUrls = [
+        'https://unpkg.com/',
+        'https://tile.openstreetmap.org',
+        'https://api.mapbox.com',
+        'https://cdnjs.cloudflare.com',
+    ];
+    const styleSrcUrls = [
+        'https://unpkg.com/',
+        'https://tile.openstreetmap.org',
+        'https://fonts.googleapis.com/',
+        'https://api.mapbox.com'
+    ];
+    const connectSrcUrls = ['https://unpkg.com', 'https://tile.openstreetmap.org'];
+    const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+
+    //set security http headers
+    app.use(
+        helmet.contentSecurityPolicy({
+            directives: {
+                defaultSrc: [],
+                connectSrc: ["'self'", ...connectSrcUrls],
+                scriptSrc: ["'self'", ...scriptSrcUrls],
+                styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+                workerSrc: ["'self'", 'blob:'],
+                objectSrc: [],
+                imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
+                fontSrc: ["'self'", ...fontSrcUrls]
+            }
+        })
+    );
+
+
     if (process.env.NODE_ENV === "development") {
         app.use(morgan("dev"))  // development logging
     }
-    
+
     app.use(express.json())  // body parser , reading data from req.body
-    app.use(express.static(path.join(__dirname, ".." , "public")))  // serving static files
+    app.use(express.static(path.join(__dirname, "..", "public")))  // serving static files
     app.use(cookieParser())  // cookie parser , reading cookies from req.cookies
-    
+
     // data sanitization against NoSql query injection , make sure to implement after any body parser
     app.use(mongoSanitize())
 
@@ -29,7 +61,7 @@ const setupGlobalMiddleware = (app) => {
     // prevent http parameter pollution
     app.use(hpp({
         whitelist: [
-            "duration" , "ratingsAverage" , "ratingsQuantity" , "maxGroupSize" , "difficulty" , "price"
+            "duration", "ratingsAverage", "ratingsQuantity", "maxGroupSize", "difficulty", "price"
         ]
     }))
 
@@ -39,7 +71,7 @@ const setupGlobalMiddleware = (app) => {
         windowMs: 60 * 60 * 1000,
         message: "Too many requests from this ip , please try again in 1 hour! "
     })
-    app.use('/api/v1' , limiter)  // rate limiting , limit requests from same IP
+    app.use('/api/v1', limiter)  // rate limiting , limit requests from same IP
 
 }
 
