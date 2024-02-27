@@ -10,11 +10,14 @@ exports.protectRoute = asyncHandler(async (req , res , next) => {
     let token;
 
     // 1) getting token from header
-    if(! req.headers.authorization || ! req.headers.authorization.startsWith("Bearer")) {
-        return next(new AppError("You are not logged in , please log-in to get access" , 401 , "fail"))
+    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+        token = req.headers.authorization.split(" ")[1];
+    } else if(req.cookies.jwt) {
+        token = req.cookies.jwt
     }
-    token = req.headers.authorization.split(" ")[1];
-
+    
+    if(! token) return next(new AppError("You are not logged in , please log-in to get access" , 401 , "fail"))
+    
     // 2) verify token
     const decodedJWT = jwt.verify(token , process.env.JWT_SECRET)
 
