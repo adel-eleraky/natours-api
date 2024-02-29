@@ -69,6 +69,17 @@ exports.login = asyncHandler(async (req, res, next) => {
     })
 })
 
+// logout user handler
+exports.logout = asyncHandler(async (req, res, next) => {
+    res.cookie("jwt", "logout", {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    })
+    sendResponse(res, 200, {
+        status: "success",
+        message: "logged out successfully"
+    })
+})
 
 // forget password handler
 exports.forgetPassword = asyncHandler(async (req, res, next) => {
