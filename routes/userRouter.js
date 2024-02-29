@@ -18,6 +18,11 @@ router.post(
     validation.loginRules,
     authController.login
 )
+// logout user
+router.get(
+    "/logout",
+    authController.logout
+)
 // forget password functionality
 router.post(
     "/forget-password",
