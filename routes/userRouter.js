@@ -43,6 +43,14 @@ router.patch(
     validation.updatePasswordRules,
     authController.updatePassword
 )
+// update user data
+router.patch(
+    "/updateMe",
+    protectRoute,
+    validation.updateUserRules,
+    userController.setUpdateData,
+    userController.updateMe
+)
 
 // get current logged-in user data
 router.get("/me", protectRoute, userController.setUserId, userController.getUser)
