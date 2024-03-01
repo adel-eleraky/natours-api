@@ -21,3 +21,30 @@ export const logout = async () => {
 
     return res
 }
+
+export const updateUserData = async (name , email) => {
+    const res = await axios({
+        method: "PATCH",
+        url: "http://127.0.0.1:3000/api/v1/users/updateMe",
+        data: {
+            name,
+            email
+        },
+    })
+    return res
+}
+
+export const updatePassword = async(oldPassword , newPassword , newPasswordConfirm) => {
+    
+    const res = await axios({
+        method: "PATCH",
+        url: "http://127.0.0.1:3000/api/v1/users/update-password",
+        data: {
+            oldPassword,
+            newPassword,
+            newPasswordConfirm
+        },
+    })
+
+    return res
+}
