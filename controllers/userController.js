@@ -89,3 +89,26 @@ exports.updateUser = factory.updateOne(User)  // don't update password with this
 //         updatedUser
 //     })
 // })
+
+
+
+// update logged-in user
+exports.updateMe = asyncHandler(async (req, res, next) => {
+
+    // 1)  check if there is errors from express-validator
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return displayValidationErrors(errors, res)
+    }
+
+    const newUser = await User.findByIdAndUpdate(req.user.id, req.updateData, {
+        new: true,
+        runValidators: true
+    })
+
+    sendResponse(res, 200, {
+        status: "success",
+        message: "user updated successfully",
+        user: newUser
+    })
+})
