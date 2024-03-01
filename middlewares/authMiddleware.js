@@ -35,6 +35,7 @@ exports.protectRoute = asyncHandler(async (req, res, next) => {
 
     // GRANT access to protected route
     req.user = user
+    res.locals.user = user
     next()
 })
 
