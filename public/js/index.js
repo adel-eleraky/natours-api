@@ -1,11 +1,11 @@
 import "@babel/polyfill"
-import { login, logout } from "./auth"
+import { login, logout, updateUserData, updatePassword } from "./auth"
 import { showAlert } from "./alerts"
-const form = document.querySelector(".form")
 
-if (form) {
+const loginForm = document.querySelector(".form--login")
+if (loginForm) {
 
-    form.addEventListener("submit", e => {
+    loginForm.addEventListener("submit", e => {
         e.preventDefault()
 
         const email = document.getElementById("email").value
@@ -15,11 +15,10 @@ if (form) {
             .then(res => {
                 showAlert("success", res.data.message)
                 setTimeout(() => {
-                    window.location.assign("/")
+                    window.location.replace("/")
                 }, 1500)
             })
             .catch(err => {
-                console.log(err.response.data)
                 showAlert("error", err.response.data.errors[0].msg)
             })
     })
@@ -32,9 +31,50 @@ if (logoutBtn) {
             .then(res => {
                 showAlert("success", res.data.message)
                 setTimeout(() => {
-                    location.reload(true)
+                    window.location.replace("/")
                 }, 1500)
             })
-            .catch(err => console.log(err))
+            .catch(err => showAlert("error", err.response.data.message))
+    })
+}
+
+const updateDataForm = document.querySelector(".form-user-data")
+if (updateDataForm) {
+    updateDataForm.addEventListener("submit", e => {
+        e.preventDefault()
+        const name = document.getElementById("name").value
+        const email = document.getElementById("email").value
+        updateUserData(name, email)
+            .then(res => {
+                showAlert("success", res.data.message)
+            })
+            .catch(err => {
+                showAlert("error", err.response.data.errors[0].msg)
+            })
+    })
+}
+
+const updatePasswordForm = document.querySelector(".form-user-settings")
+if (updatePasswordForm) {
+    updatePasswordForm.addEventListener("submit", async e => {
+        e.preventDefault()
+
+        document.querySelector(".btn--save-password").textContent = "Updating...."
+
+        const oldPassword = document.getElementById("password-current").value
+        const newPassword = document.getElementById("password").value
+        const newPasswordConfirm = document.getElementById("password-confirm").value
+
+        try {
+            const res = await updatePassword(oldPassword, newPassword, newPasswordConfirm)
+            showAlert("success", res.data.message)
+        } catch (err) {
+            showAlert("error", err.response.data.errors[0].msg)
+        }
+
+        document.querySelector(".btn--save-password").textContent = "Save password"
+        document.getElementById("password-current").value = ''
+        document.getElementById("password").value = ''
+        document.getElementById("password-confirm").value = ''
     })
 }
