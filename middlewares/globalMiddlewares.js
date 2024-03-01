@@ -49,6 +49,7 @@ const setupGlobalMiddleware = (app) => {
     }
 
     app.use(express.json())  // body parser , reading data from req.body
+    app.use(express.urlencoded({ extended: true }))
     app.use(express.static(path.join(__dirname, "..", "public")))  // serving static files
     app.use(cookieParser())  // cookie parser , reading cookies from req.cookies
 
