@@ -61,8 +61,8 @@ exports.deleteUser = factory.deleteOne(User)
 
 exports.setUpdateData = (req, res, next) => {
 
-    const { email, name, role } = req.body
-    req.updateData = { email, name, role }
+    req.updateData = { email: req.body.email, name: req.body.name }
+    if(req.file) req.updateData.photo = req.file.filename
     next()
 }
 exports.updateUser = factory.updateOne(User)  // don't update password with this handler
