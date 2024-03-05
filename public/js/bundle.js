@@ -12020,7 +12020,7 @@ var logout = exports.logout = /*#__PURE__*/function () {
   };
 }();
 var updateUserData = exports.updateUserData = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(name, email) {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(formData) {
     var res;
     return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
@@ -12029,10 +12029,7 @@ var updateUserData = exports.updateUserData = /*#__PURE__*/function () {
           return (0, _axios.default)({
             method: "PATCH",
             url: "http://127.0.0.1:3000/api/v1/users/updateMe",
-            data: {
-              name: name,
-              email: email
-            }
+            data: formData
           });
         case 2:
           res = _context3.sent;
@@ -12043,7 +12040,7 @@ var updateUserData = exports.updateUserData = /*#__PURE__*/function () {
       }
     }, _callee3);
   }));
-  return function updateUserData(_x3, _x4) {
+  return function updateUserData(_x3) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -12072,7 +12069,7 @@ var updatePassword = exports.updatePassword = /*#__PURE__*/function () {
       }
     }, _callee4);
   }));
-  return function updatePassword(_x5, _x6, _x7) {
+  return function updatePassword(_x4, _x5, _x6) {
     return _ref4.apply(this, arguments);
   };
 }();
@@ -12264,9 +12261,11 @@ var updateDataForm = document.querySelector(".form-user-data");
 if (updateDataForm) {
   updateDataForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    (0, _auth.updateUserData)(name, email).then(function (res) {
+    var form = new FormData();
+    form.append("name", document.getElementById("name").value);
+    form.append("email", document.getElementById("email").value);
+    form.append("photo", document.getElementById("photo").files[0]);
+    (0, _auth.updateUserData)(form).then(function (res) {
       (0, _alerts.showAlert)("success", res.data.message);
     }).catch(function (err) {
       (0, _alerts.showAlert)("error", err.response.data.errors[0].msg);
@@ -12339,7 +12338,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "12028" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "5925" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
