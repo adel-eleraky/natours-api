@@ -3,6 +3,7 @@ const userController = require('./../controllers/userController');
 const authController = require("./../controllers/authController")
 const validation = require("./../middlewares/validationMiddleware");
 const { protectRoute } = require('../middlewares/authMiddleware');
+const { uploadUserImage, resizeUserImage } = require("./../middlewares/uploadMiddleware")
 
 const router = express.Router();
 
@@ -48,6 +49,9 @@ router.patch(
     "/updateMe",
     protectRoute,
     validation.updateUserRules,
+    // userController.uploadPhoto,
+    uploadUserImage,
+    resizeUserImage,
     userController.setUpdateData,
     userController.updateMe
 )
