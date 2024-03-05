@@ -42,9 +42,13 @@ const updateDataForm = document.querySelector(".form-user-data")
 if (updateDataForm) {
     updateDataForm.addEventListener("submit", e => {
         e.preventDefault()
-        const name = document.getElementById("name").value
-        const email = document.getElementById("email").value
-        updateUserData(name, email)
+
+        const form = new FormData()
+        form.append("name" ,document.getElementById("name").value)
+        form.append("email" ,document.getElementById("email").value)
+        form.append("photo" ,document.getElementById("photo").files[0])
+
+        updateUserData(form)
             .then(res => {
                 showAlert("success", res.data.message)
             })
