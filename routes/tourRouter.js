@@ -1,6 +1,7 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
 const { protectRoute, restrictTo } = require("./../middlewares/authMiddleware")
+const { resizeTourImages, uploadTourImages } = require("./../middlewares/uploadMiddleware")
 const reviewRouter = require("./reviewRouter")
 
 const router = express.Router();
@@ -40,7 +41,13 @@ router
 router
     .route('/:id')
     .get(tourController.getTour)
-    .patch(protectRoute, restrictTo("admin", "lead-guide"), tourController.updateTour)
+    .patch(
+        protectRoute,
+        restrictTo("admin", "lead-guide"),
+        uploadTourImages,
+        resizeTourImages,
+        tourController.updateTour
+    )
     .delete(protectRoute, restrictTo("admin", "lead-guide"), tourController.deleteTour);
 
 
