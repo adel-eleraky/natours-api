@@ -3,7 +3,7 @@ const User = require("../models/userModel");
 const { signToken } = require("../utils/jsonWebToken")
 const asyncHandler = require("../utils/asyncHandler");
 const AppError = require("./../utils/appError")
-const sendEmail = require("./../utils/email")
+const Email = require("./../utils/email")
 const { validationResult } = require("express-validator")
 const displayValidationErrors = require("./../utils/validationErrors");
 const sendResponse = require("../utils/sendResponse");
@@ -28,10 +28,14 @@ exports.signup = asyncHandler(async (req, res, next) => {
         role,
     })
 
-    // 3) generate token
+    // 3) send welcome email
+    const url = `${req.protocol}://${req.get("host")}/me`
+    await new Email(newUser , url).sendWelcome()
+
+    // 4) generate token
     const token = signToken({ id: newUser._id })
 
-    // 4) send response to the client
+    // 5) send response to the client
     sendResponse(res, 201, {
         message: "new user created successfully",
         token
@@ -100,14 +104,7 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
 
     // 4) send PWD reset token to user's email
     const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/reset-password/${resetToken}`
-
-    const message = `Forgot your password? click the link below \n ${resetUrl} \n if you didn't forgot your password, please ignore this email`
-
-    await sendEmail({
-        email: user.email,
-        subject: "Password Reset Token ( valid for 10 minutes)",
-        message
-    })
+    await new Email(user, resetUrl).sendPasswordReset()
 
     // 5) send response to the client
     sendResponse(res, 200, {
