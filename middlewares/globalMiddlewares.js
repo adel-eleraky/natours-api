@@ -17,6 +17,7 @@ const setupGlobalMiddleware = (app) => {
         'https://tile.openstreetmap.org',
         'https://api.mapbox.com',
         'https://cdnjs.cloudflare.com',
+        'https://js.stripe.com'
     ];
     const styleSrcUrls = [
         'https://unpkg.com/',
@@ -38,7 +39,8 @@ const setupGlobalMiddleware = (app) => {
                 workerSrc: ["'self'", 'blob:'],
                 objectSrc: [],
                 imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
-                fontSrc: ["'self'", ...fontSrcUrls]
+                fontSrc: ["'self'", ...fontSrcUrls],
+                frameSrc: ["'self'", 'https://js.stripe.com'],
             }
         })
     );
