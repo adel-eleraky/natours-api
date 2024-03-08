@@ -1,6 +1,7 @@
 import "@babel/polyfill"
 import { login, logout, updateUserData, updatePassword } from "./auth"
 import { showAlert } from "./alerts"
+import { bookTour } from "./stripe"
 
 const loginForm = document.querySelector(".form--login")
 if (loginForm) {
@@ -80,5 +81,15 @@ if (updatePasswordForm) {
         document.getElementById("password-current").value = ''
         document.getElementById("password").value = ''
         document.getElementById("password-confirm").value = ''
+    })
+}
+
+const bookBtn = document.querySelector("#book-tour")
+if(bookBtn) {
+    bookBtn.addEventListener("click", async (e) => {
+        e.target.textContent = "Processing..."
+        const { tourId } = e.target.dataset
+
+        bookTour(tourId)
     })
 }
