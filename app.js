@@ -7,6 +7,7 @@ const tourRouter = require("./routes/tourRouter")
 const userRouter = require("./routes/userRouter")
 const reviewRouter = require("./routes/reviewRouter")
 const viewRouter = require("./routes/viewRouter")
+const bookingRouter = require("./routes/bookingRouter")
 
 const app = express()
 
@@ -21,6 +22,7 @@ app.use("/", viewRouter)
 app.use("/api/v1/tours", tourRouter)
 app.use("/api/v1/users", userRouter)
 app.use("/api/v1/reviews", reviewRouter)
+app.use("/api/v1/bookings", bookingRouter)
 
 // unhandled Routes
 app.all("*", (req, res, next) => {
