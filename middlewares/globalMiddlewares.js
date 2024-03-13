@@ -7,6 +7,7 @@ const helmet = require("helmet")
 const mongoSanitize = require("express-mongo-sanitize")
 const xss = require("xss-clean")
 const hpp = require("hpp")
+const compression = require("compression")
 
 const setupGlobalMiddleware = (app) => {
 
@@ -45,6 +46,8 @@ const setupGlobalMiddleware = (app) => {
         })
     );
 
+    // for compress response
+    app.use(compression())
 
     if (process.env.NODE_ENV === "development") {
         app.use(morgan("dev"))  // development logging
