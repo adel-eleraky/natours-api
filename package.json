@@ -11,7 +11,7 @@
     "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js --public-url /js/"
   },
   "engines": {
-    "node": ">=20.11.1"
+    "node": ">=18.0.0"
   },
   "author": "el3raky",
   "license": "ISC",
