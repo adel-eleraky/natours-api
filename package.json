@@ -10,9 +10,6 @@
     "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js --public-url /js/",
     "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js --public-url /js/"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  },
   "author": "el3raky",
   "license": "ISC",
   "dependencies": {
