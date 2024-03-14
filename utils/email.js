@@ -1,19 +1,31 @@
 const nodemailer = require("nodemailer")
 const pug = require("pug")
 const { htmlToText } = require("html-to-text")
+
 module.exports = class Email {
     constructor(user, url) {
         this.to = user.email
         this.firstName = user.name.split(" ")[0]
         this.url = url
-        this.form = `adel kamel <${process.env.EMAIL_FROM}>`
+        this.from = `adel kamel <${process.env.EMAIL_FROM}>`
     }
 
     newTransport() {
-        if (process.env.NODE_ENV == "production") {
-            // Sendgrid
-            return 1;
+
+        // for production
+        if (process.env.NODE_ENV === "production") {
+            // Brevo service
+            return nodemailer.createTransport({
+                host: "smtp-relay.brevo.com",
+                port: 587,
+                auth: {
+                    user: process.env.BREVO_USERNAME,
+                    pass: process.env.BREVO_PASSWORD
+                }
+            })
         }
+
+        // for development
         return nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
             port: process.env.EMAIL_PORT,
