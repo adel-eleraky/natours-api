@@ -8,6 +8,7 @@ const mongoSanitize = require("express-mongo-sanitize")
 const xss = require("xss-clean")
 const hpp = require("hpp")
 const compression = require("compression")
+const cors = require("cors")
 
 const setupGlobalMiddleware = (app) => {
 
@@ -78,6 +79,12 @@ const setupGlobalMiddleware = (app) => {
         message: "Too many requests from this ip , please try again in 1 hour! "
     })
     app.use('/api/v1', limiter)  // rate limiting , limit requests from same IP
+
+    // cors
+    app.use(cors({
+        origin: "*",
+        credentials: true
+    }))
 
 }
 
