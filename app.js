@@ -26,7 +26,14 @@ app.use("/api/v1/users", userRouter)
 app.use("/api/v1/reviews", reviewRouter)
 app.use("/api/v1/bookings", bookingRouter)
 
-app.post("/webhook-checkout", bodyParser.raw({ type: "application/json" }) ,webhookCheckout)
+app.post("/webhook-checkout",
+    bodyParser.json({
+        verify: (req, res, buf) => {
+            req.rawBody = buf;
+        }
+    }), 
+    webhookCheckout
+)
 
 // unhandled Routes
 app.all("*", (req, res, next) => {
