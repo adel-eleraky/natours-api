@@ -28,7 +28,7 @@ exports.getCheckoutSession = asyncHandler(async (req, res, next) => {
                     product_data: {
                         name: `${tour.name} Tour`,
                         description: tour.summary,
-                        images: [`https://adel-natours-api.cyclic.app/img/tours/${tour.imageCover}`],
+                        images: [`https://tours-booking.cyclic.app/img/tours/${tour.imageCover}`],
                     },
                 },
                 quantity: 1
