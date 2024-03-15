@@ -29,7 +29,7 @@ app.use("/api/v1/bookings", bookingRouter)
 app.post("/webhook-checkout",
     bodyParser.json({
         verify: (req, res, buf) => {
-            req.rawBody = buf;
+            req.rawBody = buf.toString();
         }
     }), 
     webhookCheckout
