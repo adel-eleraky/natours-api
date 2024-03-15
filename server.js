@@ -40,4 +40,10 @@ process.on('unhandledRejection', err => {
     })
 })
 
-
+// close the server when receiving SIGTERM
+process.on("SIGTERM" , () => {
+    console.log("SIGTERM RECEIVED. Shutting down gracefully")
+    server.close(() => {
+        console.log("Process terminated")
+    })
+})
