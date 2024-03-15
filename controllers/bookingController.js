@@ -66,14 +66,9 @@ exports.webhookCheckout = (req, res, next) => {
 
     const signature = req.headers['stripe-signature']
 
-    console.log("json stringify" , JSON.stringify(req.body))
-    console.log("req body" ,req.body)
-    console.log("type of req body" , typeof req.body)
-    console.log("req rawBody" ,req.rawBody)
-    console.log("type of req rawBody" , typeof req.rawBody)
     let event
     try {
-        event = stripe.webhooks.constructEvent(req.rawBody, signature, process.env.STRIPE_WEBHOOK_SECRET)
+        event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET)
     } catch (err) {
         console.log("error", err)
         return res.status(400).send(`Webhook error: ${err.message}`)
