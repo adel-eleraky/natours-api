@@ -9,6 +9,7 @@ const reviewRouter = require("./routes/reviewRouter")
 const viewRouter = require("./routes/viewRouter")
 const bookingRouter = require("./routes/bookingRouter")
 const { webhookCheckout } = require("./controllers/bookingController")
+const bodyParser = require("body-parser")
 
 const app = express()
 
@@ -25,7 +26,7 @@ app.use("/api/v1/users", userRouter)
 app.use("/api/v1/reviews", reviewRouter)
 app.use("/api/v1/bookings", bookingRouter)
 
-app.post("/webhook-checkout", express.raw({type:"application/json"}) ,webhookCheckout)
+app.post("/webhook-checkout", bodyParser.raw({ type: "application/json" }) ,webhookCheckout)
 
 // unhandled Routes
 app.all("*", (req, res, next) => {
