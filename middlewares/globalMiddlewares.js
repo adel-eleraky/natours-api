@@ -10,6 +10,7 @@ const hpp = require("hpp")
 const compression = require("compression")
 const cors = require("cors")
 const bodyParser = require("body-parser")
+const { webhookCheckout } = require("./../controllers/bookingController")
 
 
 const setupGlobalMiddleware = (app) => {
@@ -55,6 +56,11 @@ const setupGlobalMiddleware = (app) => {
     if (process.env.NODE_ENV === "development") {
         app.use(morgan("dev"))  // development logging
     }
+
+    app.post("/webhook-checkout",
+        bodyParser.raw({ type: 'application/json' }),
+        webhookCheckout
+    )
 
     app.use(bodyParser.json())
     // app.use(express.json())  // body parser , reading data from req.body
