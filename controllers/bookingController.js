@@ -62,19 +62,17 @@ const createBooking = async session => {
     await Booking.create({ tour, user, price })
 }
 
-exports.webhookCheckout = asyncHandler(async (req, res, next) => {
+exports.webhookCheckout = (req, res, next) => {
 
     const signature = req.headers['stripe-signature']
 
-    const event = stripe.webhooks.constructEvent(
-        req.body,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET
-    )
+    let event
+    try {
+        event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET)
+    } catch (err) {
+        return res.status(400).send(`Webhook error: ${err.message}`)
+    }
 
-    console.log('event', event)
-    console.log("req.body", req.body)
-    console.log("signature", signature)
     if (event.type === 'checkout.session.completed') {
         createBooking(event.data.object)
     }
@@ -82,6 +80,6 @@ exports.webhookCheckout = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         received: true
     })
-})
+}
 
 exports.getAllBookings = factory.getAll(Booking)
