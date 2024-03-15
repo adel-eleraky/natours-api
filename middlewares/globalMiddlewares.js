@@ -72,6 +72,9 @@ const setupGlobalMiddleware = (app) => {
         ]
     }))
 
+    // trust first proxy 
+    app.set("trust proxy", 1)
+
     // rate limiter
     const limiter = rateLimit({
         max: 100,
