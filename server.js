@@ -6,8 +6,8 @@ const app = require('./app');
 
 
 // close the server when uncaught exception happen
-process.on("uncaughtException" , err => {
-    console.log(err.name , err.message)
+process.on("uncaughtException", err => {
+    console.log(err.name, err.message)
     console.log("UNCAUGHT EXCEPTION: Shutting down the application.....")
     process.exit(1)
 })
@@ -19,17 +19,20 @@ const DB = process.env.DATABASE.replace(
     process.env.DATABASE_PASSWORD
 );
 
+let server;
+
 mongoose
     .connect(DB)
     .then((conn) => {
         console.group('DB connected successfully');
+
+        // listen to requests coming to server
+        const port = process.env.PORT || 3000;
+        server = app.listen(port, () => {
+            console.log(`listening on port ${port}`);
+        });
     })
 
-// listen to requests coming to server
-const port = process.env.PORT || 3000;
-const server = app.listen(port, () => {
-    console.log(`listening on port ${port}`);
-});
 
 // close the server when unhandled rejection happen
 process.on('unhandledRejection', err => {
@@ -41,7 +44,7 @@ process.on('unhandledRejection', err => {
 })
 
 // close the server when receiving SIGTERM
-process.on("SIGTERM" , () => {
+process.on("SIGTERM", () => {
     console.log("SIGTERM RECEIVED. Shutting down gracefully")
     server.close(() => {
         console.log("Process terminated")
