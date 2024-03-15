@@ -10,7 +10,7 @@ const hpp = require("hpp")
 const compression = require("compression")
 const cors = require("cors")
 const bodyParser = require("body-parser")
-const { webhookCheckout } = require("./controllers/bookingController")
+const { webhookCheckout } = require("./../controllers/bookingController")
 
 
 const setupGlobalMiddleware = (app) => {
