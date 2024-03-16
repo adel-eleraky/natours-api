@@ -4,6 +4,16 @@ const Booking = require("./../models/bookingModel")
 const asyncHandler = require("./../utils/asyncHandler")
 const AppError = require("./../utils/appError")
 
+
+exports.alerts = (req, res, next) => {
+
+    const { alert } = req.query
+    if (alert === "booking") {
+        res.locals.alert = "Your booking was successful!"
+    }
+    next()
+}
+
 exports.getOverview = asyncHandler(async (req, res, next) => {
 
     // 1) get tours data from collection
@@ -48,7 +58,7 @@ exports.getAccount = asyncHandler(async (req, res, next) => {
 })
 
 exports.getMyTours = asyncHandler(async (req, res, next) => {
-    
+
     // 1) find all bookings
     const bookings = await Booking.find({ user: req.user.id })
 
