@@ -10,8 +10,6 @@ also can add review and rating to each tour
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-- [Usage](#usage)
-
 
 
 ## Features
