@@ -13,7 +13,53 @@ router.post(
     validation.signupRules,
     authController.signup
 )
+
 // login user
+/**
+ * @swagger
+ * /api/v1/users/login:
+ *  post:
+ *      summary: Log in user
+ *      description: API for users to log in
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      required:
+ *                          - email
+ *                          - password
+ *                      properties:
+ *                          email: 
+ *                              type: string
+ *                              example: user@example.com
+ *                          password:
+ *                              type: string
+ *                              example: secret123
+ *      responses:
+ *          200:
+ *              description: Test login API
+ *              content: 
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              status: 
+ *                                  type: string
+ *                                  example: success
+ *                              message: 
+ *                                  type: string
+ *                                  example: logged in successfully
+ *                              token: 
+ *                                  type: string
+ *                                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                              data:
+ *                                  type: object
+ *                                  properties:
+ *                                      user: 
+ *                                         $ref: '#/components/schemas/User'
+ */
 router.post(
     "/login",
     validation.loginRules,
