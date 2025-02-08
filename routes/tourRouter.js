@@ -54,7 +54,7 @@ router
  * @swagger
  * /api/v1/tours/{id}:
  *  get:
- *      summery: Get single Tour by ID 
+ *      summary: Get single Tour by ID 
  *      description: this is api for getting tour data by ID
  *      parameters:
  *          - in: path
