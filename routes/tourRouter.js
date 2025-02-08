@@ -6,6 +6,8 @@ const reviewRouter = require("./reviewRouter")
 
 const router = express.Router();
 
+
+
 // param middleware
 // router.param('id', tourController.checkId); 
 
@@ -32,12 +34,52 @@ router.route("/tours-within/:distance/center/:lat_lng/unit/:unit").get(tourContr
 // get distance of tours between two coordinates
 router.route("/tours-distance/:lat_lng/unit/:unit").get(tourController.getToursDistance)
 
+/**
+ * @swagger
+ * /api/v1/tours:
+ *  get:
+ *      summary: Get all Tours
+ *      description: this is api for getting all Tours data
+ *      responses: 
+ *          200:
+ *              description: test get all tours data
+ */
 // CRUD operations on tours
 router
     .route('/')
     .get(tourController.getAllTours)
     .post(protectRoute, restrictTo("admin", "lead-guide"), tourController.createTour);
 
+/**
+ * @swagger
+ * /api/v1/tours/{id}:
+ *  get:
+ *      summery: Get single Tour by ID 
+ *      description: this is api for getting tour data by ID
+ *      parameters:
+ *          - in: path
+ *            name: id
+ *            required: true
+ *            description: Tour ID
+ *            schema:
+ *                type: string
+ *      responses: 
+ *          200:
+ *              description: test get tour data
+ *              content: 
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              status:
+ *                                  type: string
+ *                                  example: success
+ *                              data:
+ *                                  type: object
+ *                                  properties:
+ *                                      doc:
+ *                                         $ref: '#components/schemas/Tour'
+ */
 router
     .route('/:id')
     .get(tourController.getTour)
