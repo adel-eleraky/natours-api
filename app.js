@@ -11,6 +11,7 @@ const bookingRouter = require("./routes/bookingRouter")
 const swaggerJSDoc = require("swagger-jsdoc")
 const swaggerUi = require("swagger-ui-express")
 const tourSchema = require("./schemas/tourSchema")
+const userSchema = require("./schemas/userSchema")
 
 const app = express()
 
@@ -28,7 +29,10 @@ const options = {
             }
         ],
         components: {
-            schemas: tourSchema
+            schemas: {
+                Tour: tourSchema,
+                User: userSchema
+            }
         }
     },
     apis: [
@@ -38,7 +42,7 @@ const options = {
 
 
 const swaggerSpec = swaggerJSDoc(options)
-app.use("/api-docs" , swaggerUi.serve , swaggerUi.setup(swaggerSpec))
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 
 // global middlewares
