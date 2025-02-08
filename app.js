@@ -8,8 +8,38 @@ const userRouter = require("./routes/userRouter")
 const reviewRouter = require("./routes/reviewRouter")
 const viewRouter = require("./routes/viewRouter")
 const bookingRouter = require("./routes/bookingRouter")
+const swaggerJSDoc = require("swagger-jsdoc")
+const swaggerUi = require("swagger-ui-express")
+const tourSchema = require("./schemas/tourSchema")
 
 const app = express()
+
+
+const options = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Natours - Adventure Tours Booking System",
+            version: "1.0.0"
+        },
+        servers: [
+            {
+                url: "http://localhost:3000"
+            }
+        ],
+        components: {
+            schemas: tourSchema
+        }
+    },
+    apis: [
+        './routes/*.js',
+    ]
+}
+
+
+const swaggerSpec = swaggerJSDoc(options)
+app.use("/api-docs" , swaggerUi.serve , swaggerUi.setup(swaggerSpec))
+
 
 // global middlewares
 setupGlobalMiddleware(app)
