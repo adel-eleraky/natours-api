@@ -35,9 +35,11 @@ exports.signup = asyncHandler(async (req, res, next) => {
     // 4) generate token
     const token = signToken({ id: newUser._id })
 
+    newUser.password = undefined
     // 5) send response to the client
     sendResponse(res, 201, {
-        message: "new user created successfully",
+        message: "registered successfully",
+        data: {user: newUser},
         token
     })
 })
@@ -63,6 +65,9 @@ exports.login = asyncHandler(async (req, res, next) => {
     // 4) generate token
     const token = signToken({ id: user._id })
 
+    // 4.5) remove password from output
+    user.password = undefined;
+
     // 5) send response to the client
     sendResponse(res, 200, {
         message: "logged in successfully",
@@ -77,7 +82,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 exports.logout = asyncHandler(async (req, res, next) => {
     res.cookie("jwt", "logout", {
         expires: new Date(Date.now() + 10 * 1000),
-        httpOnly: true
+        httpOnly: true,
     })
     sendResponse(res, 200, {
         status: "success",
