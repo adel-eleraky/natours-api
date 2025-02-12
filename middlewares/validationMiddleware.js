@@ -46,7 +46,7 @@ exports.loginRules = [
             const existingUser = await User.findOne({ email: val }).select("password")
 
             if (!existingUser) {
-                throw new Error("Incorrect email or password")
+                throw new Error("Incorrect email")
             }
 
             req.user = existingUser;
@@ -61,7 +61,7 @@ exports.loginRules = [
                 const passwordMatch = await bcrypt.compare(val, req.user.password)
 
                 if (!passwordMatch) {
-                    throw new Error("Incorrect email or password")
+                    throw new Error("Incorrect password")
                 }
 
                 return true;
