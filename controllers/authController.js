@@ -108,7 +108,7 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
     await user.save({ validateBeforeSave: false })
 
     // 4) send PWD reset token to user's email
-    const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/reset-password/${resetToken}`
+    const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`
     await new Email(user, resetUrl).sendPasswordReset()
 
     // 5) send response to the client
