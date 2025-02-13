@@ -1,16 +1,17 @@
 const express = require('express');
 const userController = require('./../controllers/userController');
 const authController = require("./../controllers/authController")
-const validation = require("./../middlewares/validationMiddleware");
+// const validation = require("./../middlewares/validationMiddleware");
 const { protectRoute } = require('../middlewares/authMiddleware');
-const { uploadUserImage, resizeUserImage } = require("./../middlewares/uploadMiddleware")
+const { uploadUserImage, resizeUserImage } = require("./../middlewares/uploadMiddleware");
+const { validate, signupSchema, loginSchema, forgetPasswordSchema, resetPasswordSchema, updatePasswordSchema, updateUserSchema } = require('../middlewares/validationMiddleware');
 
 const router = express.Router();
 
 // sign-up new user
 router.post(
     "/signup",
-    validation.signupRules,
+    validate(signupSchema),
     authController.signup
 )
 
@@ -62,7 +63,7 @@ router.post(
  */
 router.post(
     "/login",
-    validation.loginRules,
+    validate(loginSchema),
     authController.login
 )
 // logout user
@@ -73,13 +74,13 @@ router.get(
 // forget password functionality
 router.post(
     "/forget-password",
-    validation.forgetPasswordRules,
+    validate(forgetPasswordSchema),
     authController.forgetPassword
 )
 // reset user password
 router.patch(
     "/reset-password/:PWD_token",
-    validation.resetPasswordRules,
+    validate(resetPasswordSchema),
     authController.resetPassword
 )
 
@@ -87,17 +88,17 @@ router.patch(
 router.patch(
     "/update-password",
     protectRoute,
-    validation.updatePasswordRules,
+    validate(updatePasswordSchema),
     authController.updatePassword
 )
 // update user data
 router.patch(
     "/updateMe",
     protectRoute,
-    validation.updateUserRules,
-    // userController.uploadPhoto,
     uploadUserImage,
     resizeUserImage,
+    validate(updateUserSchema),
+    // userController.uploadPhoto,
     userController.setUpdateData,
     userController.updateMe
 )
@@ -114,7 +115,7 @@ router
     .route("/:id")
     .get(userController.getUser)
     .delete(protectRoute, userController.deleteUser)
-    .patch(protectRoute, validation.updateUserRules, userController.setUpdateData, userController.updateUser)
+    .patch(protectRoute/* validation.updateUserRules*/, userController.setUpdateData, userController.updateUser)
 
 
 module.exports = router;
