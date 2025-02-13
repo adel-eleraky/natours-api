@@ -68,12 +68,6 @@ exports.setUpdateData = (req, res, next) => {
 exports.updateUser = factory.updateOne(User)  // don't update password with this handler
 // exports.updateUser = asyncHandler(async (req, res, next) => {
 
-// // 1)  check if there is errors from express-validator
-// const errors = validationResult(req)
-// if (!errors.isEmpty()) {
-//     return displayValidationErrors(errors, res)
-// }
-
 //     //2) update user data
 //     const { email, name, role } = req.body
 //     const updateData = { email, name, role }
@@ -94,12 +88,6 @@ exports.updateUser = factory.updateOne(User)  // don't update password with this
 
 // update logged-in user
 exports.updateMe = asyncHandler(async (req, res, next) => {
-
-    // 1)  check if there is errors from express-validator
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return displayValidationErrors(errors, res)
-    }
 
     const newUser = await User.findByIdAndUpdate(req.user.id, req.updateData, {
         new: true,

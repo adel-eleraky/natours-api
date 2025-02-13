@@ -11,13 +11,7 @@ const sendResponse = require("../utils/sendResponse");
 // signup user handler
 exports.signup = asyncHandler(async (req, res, next) => {
 
-    // 1) check if there is validation errors coming from express-validator
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return displayValidationErrors(errors, res)
-    }
-
-    // 2) signup new user
+    // 1) signup new user
     const { name, email, password, passwordConfirm, role } = req.body
 
     const newUser = await User.create({
@@ -28,15 +22,15 @@ exports.signup = asyncHandler(async (req, res, next) => {
         role,
     })
 
-    // 3) send welcome email
+    // 2) send welcome email
     const url = `${req.protocol}://${req.get("host")}/me`
     await new Email(newUser , url).sendWelcome()
 
-    // 4) generate token
+    // 3) generate token
     const token = signToken({ id: newUser._id })
 
     newUser.password = undefined
-    // 5) send response to the client
+    // 4) send response to the client
     sendResponse(res, 201, {
         message: "registered successfully",
         data: {user: newUser},
@@ -47,28 +41,22 @@ exports.signup = asyncHandler(async (req, res, next) => {
 // login user handler
 exports.login = asyncHandler(async (req, res, next) => {
 
-    // 1) check if there is validation errors coming from express-validator
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return displayValidationErrors(errors, res)
-    }
-
-    // 2) find user by email
+    // 1) find user by email
     const { email, password } = req.body
     const user = await User.findOne({ email }).select("+password")
     if (!user) return next(new AppError("Incorrect email or password", 401, "fail"))
 
-    // 3) check password is correct
+    // 2) check password is correct
     const result = await user.checkPassword(password, user.password)
     if (!result) return next(new AppError("Incorrect email or password", 401, "fail"))
 
-    // 4) generate token
+    // 3) generate token
     const token = signToken({ id: user._id })
 
-    // 4.5) remove password from output
+    // 3.5) remove password from output
     user.password = undefined;
 
-    // 5) send response to the client
+    // 4) send response to the client
     sendResponse(res, 200, {
         message: "logged in successfully",
         data: {
@@ -93,25 +81,19 @@ exports.logout = asyncHandler(async (req, res, next) => {
 // forget password handler
 exports.forgetPassword = asyncHandler(async (req, res, next) => {
 
-    // 1) check if there is errors from express-validator
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return displayValidationErrors(errors, res)
-    }
-
-    // 2) find user by email
+    // 1) find user by email
     const user = await User.findOne({ email: req.body.email })
     if (!user) return next(new AppError("Enter valid email", 401, "fail"))
 
-    // 3) generate && save password reset token in database
+    // 2) generate && save password reset token in database
     const resetToken = user.createPwdToken()
     await user.save({ validateBeforeSave: false })
 
-    // 4) send PWD reset token to user's email
+    // 3) send PWD reset token to user's email
     const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`
     await new Email(user, resetUrl).sendPasswordReset()
 
-    // 5) send response to the client
+    // 4) send response to the client
     sendResponse(res, 200, {
         message: "Password Reset Token sent to your email"
     })
@@ -120,12 +102,7 @@ exports.forgetPassword = asyncHandler(async (req, res, next) => {
 // reset password handler
 exports.resetPassword = asyncHandler(async (req, res, next) => {
 
-    // 1) check if there is errors from express-validator
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return displayValidationErrors(errors, res)
-    }
-    // 2) find user by PWD reset token
+    // 1) find user by PWD reset token
     const hashedToken = crypto.createHash("sha256").update(req.params.PWD_token).digest("hex")
 
     const user = await User.findOne({
@@ -133,7 +110,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
         passwordResetTokenExpire: { $gt: Date.now() }
     })
 
-    // 3) check if the token has not expired , and there is user, set the new password
+    // 2) check if the token has not expired , and there is user, set the new password
     if (!user) return next(new AppError("Invalid token or has expired", 401, "fail"))
 
     const { password, passwordConfirm } = req.body
@@ -144,10 +121,10 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     user.passwordResetTokenExpire = undefined
     await user.save()
 
-    // 4) log the user in , send JWT to the client
+    // 3) log the user in , send JWT to the client
     const token = signToken({ id: user._id })
 
-    // 5) send response to the client
+    // 4) send response to the client
     sendResponse(res, 200, {
         message: "password reset successfully",
         token
@@ -158,15 +135,10 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
 // update current user password
 exports.updatePassword = asyncHandler(async (req, res, next) => {
 
-    // 1) check if there is errors from express-validator
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-        return displayValidationErrors(errors, res)
-    }
-    // 2) get current user
+    // 1) get current user
     const user = req.user
 
-    //3) update user password
+    // 2) update user password
     const { oldPassword, newPassword, newPasswordConfirm } = req.body
     // check password is correct
     const result = await user.checkPassword(oldPassword, user.password)
@@ -176,10 +148,10 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
     user.passwordConfirm = newPasswordConfirm;
     await user.save()
 
-    // 4) log user in, send JWT to the client
+    // 3) log user in, send JWT to the client
     const token = signToken({ id: user._id })
 
-    // 5) send response to the client
+    // 4) send response to the client
     sendResponse(res, 200, {
         message: "password updated successfully",
         token
