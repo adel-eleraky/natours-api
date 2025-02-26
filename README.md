@@ -34,6 +34,8 @@ also can add review and rating to each tour
 - Mongoose
 - mailtrap
 - JWT
+- multer
+- pug template engine
 - stripe payment gateway
 - NPM (Node Package Manager)
 
