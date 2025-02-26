@@ -88,7 +88,7 @@ Make sure you have Node.js and npm installed on your machine. You can download t
 
 5. Start the API server:
     ```sh
-    npm run start
+    npm run dev
     ```
 
 6. Compile js and watch for changes:
