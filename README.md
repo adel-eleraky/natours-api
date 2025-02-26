@@ -32,6 +32,9 @@ also can add review and rating to each tour
 - Express.js
 - Mongodb
 - Mongoose
+- mailtrap
+- JWT
+- stripe payment gateway
 - NPM (Node Package Manager)
 
 ## Getting Started
